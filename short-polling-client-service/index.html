@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Short Polling Client</title>
+</head>
+<body>
+    <h1>Short Polling Client</h1>
+    <script>
+        let lastMessageId = 1;
+
+        setInterval(async () => {
+            try {
+                console.log('Polling in progress')
+                const response = await fetch(`http://localhost:4000/poll-messages?lastMessageId=${lastMessageId}`);
+                const newMessages = await response.json();
+                if (newMessages.length > 0) {
+                    console.log('New messages:', newMessages);
+                    lastMessageId = newMessages[newMessages.length - 1].id;
+                }
+            } catch (error) {
+                console.error('Error during polling:', error);
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

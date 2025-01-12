@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+    <h1>WebSocket Chat Client</h1>
+
+    <div id="messages" style="border: 1px solid #ccc; height: 200px; overflow-y: auto; margin-bottom: 10px;">
+        <p>No messages yet...</p>
+    </div>
+
+    <input type="text" id="message-input" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        // Connect to the WebSocket server
+        const socket = new WebSocket('ws://localhost:4000');
+
+        // Elements for displaying messages
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('message-input');
+
+        // Append a message to the messages div
+        function appendMessage(message) {
+            const messageElement = document.createElement('p');
+            messageElement.textContent = message;
+            messagesDiv.appendChild(messageElement);
+
+            // Scroll to the bottom
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // WebSocket event handlers
+        socket.onopen = () => {
+            console.log('Connected to the WebSocket server');
+            appendMessage('Connected to the WebSocket server');
+        };
+
+        socket.onmessage = (event) => {
+            console.log('Received:', event.data);
+            appendMessage(event.data);
+        };
+
+        socket.onclose = () => {
+            console.log('Disconnected from the WebSocket server');
+            appendMessage('Disconnected from the WebSocket server');
+        };
+
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        // Send a message to the server
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                socket.send(message);
+                appendMessage(`You: ${message}`);
+                messageInput.value = ''; // Clear the input field
+            }
+        }
+    </script>
+</body>
+</html>
